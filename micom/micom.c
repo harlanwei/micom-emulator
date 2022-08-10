@@ -1,6 +1,7 @@
 #include <linux/module.h>
 #include <linux/fs.h>
 #include <linux/device.h>
+#include "refcodes.h"
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Vian Chen <imvianchen@stu.pku.edu.cn>");
@@ -26,9 +27,27 @@ static int micom_open(struct inode *inode, struct file *filp)
     return 0;
 }
 
+/**
+ * To simplify the implemetation, the python script is responsible for encoding
+ * the original commands into ref codes.
+ */
 static long micom_ioctl(struct file *filp, unsigned int cmd, unsigned long param)
 {
+    int type, number;
     micom_info("ioctl: cmd = %d, param = %lu", cmd, param);
+
+    type = _IOC_TYPE(cmd);
+    if (type != 0x15) {
+        /* not directed to this driver. do nothing. */
+        return 0;
+    }
+    
+    number = _IOC_NR(cmd);
+    if (number < 0 || number >= MAX_CODE) {
+        micom_err("invalid code: %d", number);
+    }
+
+    micom_info("execute: %s", comm_desc[number]);
     return 0;
 }
 

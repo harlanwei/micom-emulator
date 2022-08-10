@@ -20,7 +20,7 @@ function verbose {
 }
 
 function ioctl {
-    python3 $(dirname -- "$0")/ioctl.py
+    python3 $(dirname -- "$0")/ioctl.py "$1"
 }
 
 function exec_comm {
@@ -29,7 +29,7 @@ function exec_comm {
         inject|inject-outgoing)
             comms=${@:3}
             verbose $comms
-            ioctl $comms
+            ioctl "$comms"
             ;;
 
         *)
