@@ -1,0 +1,52 @@
+#!/bin/bash
+
+## This script emulates a micom binary.
+## 
+## To issue ioctl commands, this script assumes there is
+## a `ioctl.py` script under the same folder.
+
+function fatal {
+    echo "micomd: $1"
+    if [[ -z $2 ]]; then
+        exit -1
+    fi
+    exit $2
+}
+
+function verbose {
+    if [[ ! -z $MICOMD_DEBUG ]]; then
+        echo "micomd (debug): $@"
+    fi
+}
+
+function ioctl {
+    python3 $(dirname -- "$0")/ioctl.py
+}
+
+function exec_comm {
+    case $2 in
+
+        inject|inject-outgoing)
+            comms=${@:3}
+            verbose $comms
+            ioctl $comms
+            ;;
+
+        *)
+            fatal 'unrecognised sub-command.'
+            ;;
+    
+    esac
+}
+
+case $1 in
+
+    -c)
+        exec_comm $@
+        ;;
+    
+    *)
+        fatal 'unrecognised command.'
+        ;;
+
+esac
