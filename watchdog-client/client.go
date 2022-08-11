@@ -1,5 +1,7 @@
 package main
 
+// Vian Chen <imvianchen@stu.pku.edu.cn>
+
 import (
 	"encoding/binary"
 	"fmt"
@@ -10,6 +12,8 @@ import (
 	"github.com/rivo/tview"
 	"golang.org/x/sys/unix"
 )
+
+const NOT_IMPL_STRING = " [white]([red]not implemented[white])"
 
 type hustate struct {
 	IsMuted                      bool
@@ -71,7 +75,7 @@ func (state *hustate) GetEffectiveVolume() int {
 
 func (state *hustate) GetFuelMessage() string {
 	if state.IsFuelLow {
-		return "[red]WARNING: LOW FUEL[white]"
+		return "\n[red]WARNING: LOW FUEL[white]"
 	}
 	return ""
 }
@@ -79,12 +83,13 @@ func (state *hustate) GetFuelMessage() string {
 func (state *hustate) GetNavigationAddress() (ret string) {
 	if state.NavigationAddrInd == 0 {
 		if state.ShouldShowRoundaboutDistance {
-			ret = "[red]No destination set[white]"
+			ret = "\n[red]No destination set[white]"
 		}
 		return
 	}
 
-	ret = `Navigating to:
+	ret = `
+Navigating to:
 	PKU, Yiheyuan Rd 5, Haidian District, Beijing`
 
 	if state.ShouldShowRoundaboutDistance {
@@ -94,11 +99,11 @@ func (state *hustate) GetNavigationAddress() (ret string) {
 	return
 }
 
-func (state *hustate) GetRadioMessage() (ret string) {
+func (state *hustate) GetRadioMessage() string {
 	if !state.ShouldShowRadioMessage {
-		return
+		return ""
 	}
-	return "Playing: Y.M.C.A by Village People [1:23/3:49]"
+	return "\nPlaying: Y.M.C.A by Village People [1:23/3:49]"
 }
 
 func (state *hustate) ToString() string {
@@ -110,17 +115,16 @@ func (state *hustate) ToString() string {
 Brightness: %d
 Reverse cam: %s
 Speed limit: %s
-
-%s
-%s
-%s
+%s%s%s
 `,
+
 		state.GetEffectiveVolume(),
 		state.ScreenBrightness,
 		getOnOffString(state.IsCameraReverseOn),
 		getOnOffString(state.HasSpeedLimit),
-		state.GetNavigationAddress(),
+
 		state.GetFuelMessage(),
+		state.GetNavigationAddress(),
 		state.GetRadioMessage(),
 	)
 }
@@ -146,17 +150,14 @@ func (state *hustate) Update(code uint64, textView *tview.TextView, footer *tvie
 		state.IsFuelLow = true
 		state.Event = "low_fuel_warning"
 	case 7:
-		// navigation_full_screen
-		state.Event = "navigation_full_screen [white]([red] not implemented[white])"
+		state.Event = "navigation_full_screen" + NOT_IMPL_STRING
 	case 8:
 		state.NavigationAddrInd = 1
 		state.Event = "set_navigation_address"
 	case 9:
-		// seek_down_search
-		state.Event = "seek_down_search [white]([red] not implemented[white])"
+		state.Event = "seek_down_search" + NOT_IMPL_STRING
 	case 10:
-		// seek_up_search
-		state.Event = "seek_up_search [white]([red] not implemented[white])"
+		state.Event = "seek_up_search" + NOT_IMPL_STRING
 	case 11:
 		textView.SetTextAlign(tview.AlignLeft)
 		state.IsHuOn = true
@@ -172,8 +173,7 @@ func (state *hustate) Update(code uint64, textView *tview.TextView, footer *tvie
 		state.Event = "camera_reverse_off"
 		state.IsCameraReverseOn = false
 	case 15:
-		// cluster_change_language
-		state.Event = "cluster_change_language [white]([red] not implemented[white])"
+		state.Event = "cluster_change_language" + NOT_IMPL_STRING
 	case 16:
 		state.HasSpeedLimit = !state.HasSpeedLimit
 		state.Event = "cluster_speed_limit"
@@ -181,8 +181,7 @@ func (state *hustate) Update(code uint64, textView *tview.TextView, footer *tvie
 		state.ShouldShowRoundaboutDistance = !state.ShouldShowRoundaboutDistance
 		state.Event = "cluster_roundabout_faraway"
 	case 18:
-		// cluster_random_navigation
-		state.Event = "cluster_random_navigation [white]([red] not implemented[white])"
+		state.Event = "cluster_random_navigation" + NOT_IMPL_STRING
 	case 19:
 		state.ShouldShowRadioMessage = !state.ShouldShowRadioMessage
 		state.Event = "cluster_radio_info"

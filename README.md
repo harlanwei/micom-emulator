@@ -2,7 +2,10 @@
 
 This project creates an emulation environment for [this](https://github.com/rapid7/metasploit-framework/blob/master/modules/post/android/local/koffee.rb) Metasploit module. It composes of an emulated `micom` driver, an emulated `micomd` daemon and a userspace program `watchdog` that shows if an action is successfully triggered.
 
-Tested on Debian 11 with kernel 5.10.127.
+Tested on:
+
+- Debian 11 with kernel 5.10.127
+- Ubuntu 22.04.1 with kernel 5.15.0-46-generic
 
 ## Compile & Load
 
@@ -15,7 +18,7 @@ Simply run `make all` under this directory. Do make sure you have root access or
 make all
 
 # execute userspace watchdog
-./watchdog-client/watchdog-client
+./watchdog
 
 # in a new bash
 ./micomd -c inject [command]
