@@ -1,5 +1,7 @@
 #!/bin/bash
 
+## Vian Chen <imvianchen@stu.pku.edu.cn>
+
 ## This script emulates a micom binary.
 ## 
 ## To issue ioctl commands, this script assumes there is

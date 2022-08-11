@@ -25,5 +25,7 @@ for code in refcodes:
 
 content += "};\n"
 
-with open(f"{dir}/include/refcodes.h", "w+") as header:
+header_path = f"{dir}/include/refcodes.h"
+os.makedirs(os.path.dirname(header_path), exist_ok=True)
+with open(header_path, "w+", encoding="utf-8") as header:
     header.write(content)
