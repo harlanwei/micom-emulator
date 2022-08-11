@@ -28,8 +28,8 @@ func computeBoundedValue(value int, isNegative bool) int {
 		}
 		return value - 10
 	} else {
-		if value >= 10 {
-			return 0
+		if value >= 90 {
+			return 100
 		}
 		return value + 10
 	}
@@ -50,9 +50,9 @@ func (state *hustate) LowerVolume() {
 	state.RadioVolume = computeBoundedValue(state.RadioVolume, true)
 }
 
-func (state *hustate) IncreaseVolume() {
-	state.RadioVolume = computeBoundedValue(state.RadioVolume, false)
-}
+// func (state *hustate) IncreaseVolume() {
+// 	state.RadioVolume = computeBoundedValue(state.RadioVolume, false)
+// }
 
 func (state *hustate) LowerBrightness() {
 	state.ScreenBrightness = computeBoundedValue(state.ScreenBrightness, true)
@@ -103,7 +103,7 @@ func (state *hustate) Update(code uint64, textView *tview.TextView, footer *tvie
 		state.LowerVolume()
 		state.Event = "reduce_radio_volume"
 	case 3:
-		state.IncreaseVolume()
+		state.RadioVolume = 100
 		state.Event = "max_radio_volume"
 	case 4:
 		state.LowerBrightness()

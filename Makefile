@@ -1,7 +1,7 @@
 all: driver
 	cd micom && make load
 	cd ..
-	cp watchdog-client/watchdog .
+	ln -s $(shell pwd)/watchdog-client/watchdog watchdog
 
 header:
 	python3 ./header.py
