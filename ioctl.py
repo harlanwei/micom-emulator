@@ -4,6 +4,7 @@ import fcntl
 import json
 import os
 import sys
+import re
 
 REF_COMMAND = 0
 
@@ -48,11 +49,11 @@ with open(f"{dir}/refcodes.json", "r") as f:
     obj = json.load(f)
     refcodes = obj["refcodes"]
 
-command = sys.argv[1]
+command = sys.argv[1].lower()
 for ind, code in enumerate(refcodes):
-    if code[REF_COMMAND] == command:
+    if re.compile(code[REF_COMMAND]).match(command):
         with open("/dev/micom", "wb") as fd:
-            fcntl.ioctl(fd, IOW(ind))
+            fcntl.ioctl(fd, IOW(ind + 1))
             exit(0)
 
 print(f"Unknown command: {command}", file=sys.stderr)

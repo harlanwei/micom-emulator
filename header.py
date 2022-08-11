@@ -16,7 +16,8 @@ content = f"""// This file is generated automatically.
 
 #define MAX_CODE {len(refcodes)}
 
-static const char *comm_desc[MAX_CODE] = {{
+static const char *comm_desc[{len(refcodes) + 1}] = {{
+    "", // for eventfd
 """
 
 for code in refcodes:
@@ -24,5 +25,5 @@ for code in refcodes:
 
 content += "};\n"
 
-with open(f"{dir}/micom/refcodes.h", "w+") as header:
+with open(f"{dir}/include/refcodes.h", "w+") as header:
     header.write(content)

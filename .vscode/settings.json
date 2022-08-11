@@ -3,6 +3,7 @@
         "module.h": "c",
         "list.h": "c",
         "kernel.h": "c",
-        "compiler.h": "c"
+        "compiler.h": "c",
+        "refcodes.h": "c"
     }
 }

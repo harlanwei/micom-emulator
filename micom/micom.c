@@ -1,7 +1,8 @@
 #include <linux/module.h>
 #include <linux/fs.h>
 #include <linux/device.h>
-#include "refcodes.h"
+#include <linux/eventfd.h>
+#include "../include/refcodes.h"
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Vian Chen <imvianchen@stu.pku.edu.cn>");
@@ -20,11 +21,22 @@ MODULE_AUTHOR("Vian Chen <imvianchen@stu.pku.edu.cn>");
 static int major;
 static dev_t devno;
 static struct class *device_class;
+static struct eventfd_ctx *ctxp;
+
 
 static int micom_open(struct inode *inode, struct file *filp)
 {
-    micom_info("device opened");
     return 0;
+}
+
+static void comm_exec(int code)
+{
+    if (!ctxp)
+        return;
+
+    // As this is a very simplified mock environment, it's very
+    // unlikely that the counter would overflow.
+    eventfd_signal(ctxp, code);
 }
 
 /**
@@ -43,17 +55,29 @@ static long micom_ioctl(struct file *filp, unsigned int cmd, unsigned long param
     }
     
     number = _IOC_NR(cmd);
-    if (number < 0 || number >= MAX_CODE) {
+    if (number < 0 || number > MAX_CODE) {
         micom_err("invalid code: %d", number);
     }
 
-    micom_info("execute: %s", comm_desc[number]);
+    if (number == 0) {
+        int ueventfd = (int) param;
+        micom_info("ueventfd from uspace: %d", ueventfd);
+
+        ctxp = eventfd_ctx_fdget(ueventfd);
+        if (IS_ERR(ctxp)) {
+            micom_err("failed to get eventfd context");
+            return -EINVAL;
+        }
+    } else {
+        micom_info("sending: %s", comm_desc[number]);
+        comm_exec(number);
+    }
+
     return 0;
 }
 
 static int micom_release(struct inode *inode, struct file *filp)
 {
-    micom_info("device closed");
     return 0;
 }
 
@@ -112,6 +136,10 @@ static void __exit exit_micom(void)
     device_destroy(device_class, devno);
     class_destroy(device_class);
     unregister_chrdev(major, DEVICE_NAME);
+
+    if (ctxp) {
+        eventfd_ctx_put(ctxp);
+    }
 }
 
 module_init(init_micom);
