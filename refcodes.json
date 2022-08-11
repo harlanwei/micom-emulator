@@ -1,24 +1,84 @@
 {
     "refcodes": [
-        ["8351 04", "toggle_radio_mute"],
-        ["0112 f4 01", "reduce_radio_volume"],
-        ["0112 f0", "max_radio_volume" ],
-        ["8353 07 01", "low_screen_brightness" ],
-        ["8353 07 00", "high_screen_brightness" ],
-        ["8353 0b 01", "low_fuel_warning" ],
-        ["8353 0c 01", "navigation_full_screen" ],
-        ["8353 0d 03", "set_navigation_address" ],
-        ["133 01", "seek_down_search" ],
-        ["133 02", "seek_up_search" ],
-        ["170 01", "switch_on_hu" ],
-        ["170 00", "switch_off_hu" ],
-        ["8353 03 01", "camera_reverse_on" ],
-        ["8353 03 00", "camera_reverse_off" ],
-        ["4d3 ..", "cluster_change_language" ],
-        ["4db 00 .a", "cluster_speed_limit" ],
-        ["4d1 66 00 00 00 14 86 .0 00", "cluster_roundabout_faraway" ],
-        ["4d1 ..", "cluster_random_navigation" ],
-        ["4d6 .*", "cluster_radio_info" ],
-        ["not impl", "inject_custom" ]
+        [
+            "8351 04",
+            "toggle_radio_mute"
+        ],
+        [
+            "0112 f4 01",
+            "reduce_radio_volume"
+        ],
+        [
+            "0112 f0",
+            "max_radio_volume"
+        ],
+        [
+            "8353 07 0[1-9a-e]",
+            "low_screen_brightness"
+        ],
+        [
+            "8353 07 00",
+            "high_screen_brightness"
+        ],
+        [
+            "8353 0b 0[1-9a-e]",
+            "low_fuel_warning"
+        ],
+        [
+            "8353 0c 01",
+            "navigation_full_screen"
+        ],
+        [
+            "8353 0d 03",
+            "set_navigation_address"
+        ],
+        [
+            "133 0[1-9a-e]",
+            "seek_down_search"
+        ],
+        [
+            "133 02",
+            "seek_up_search"
+        ],
+        [
+            "170 0[1-9a-e]",
+            "switch_on_hu"
+        ],
+        [
+            "170 00",
+            "switch_off_hu"
+        ],
+        [
+            "8353 03 0[1-9a-e]",
+            "camera_reverse_on"
+        ],
+        [
+            "8353 03 00",
+            "camera_reverse_off"
+        ],
+        [
+            "4d3 ..",
+            "cluster_change_language"
+        ],
+        [
+            "4db 00 .a",
+            "cluster_speed_limit"
+        ],
+        [
+            "4d1 66 00 00 00 14 86 [0-9a-e]0 00",
+            "cluster_roundabout_faraway"
+        ],
+        [
+            "4d1 [0-9a-e]{2}",
+            "cluster_random_navigation"
+        ],
+        [
+            "4d6 .*",
+            "cluster_radio_info"
+        ],
+        [
+            "PLACEHOLDER",
+            "inject_custom"
+        ]
     ]
 }

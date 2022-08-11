@@ -5,20 +5,24 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/rivo/tview"
 	"golang.org/x/sys/unix"
 )
 
 type hustate struct {
-	IsMuted           bool
-	RadioVolume       int
-	ScreenBrightness  int
-	NavigationAddrInd int
-	IsHuOn            bool
-	IsCameraReverseOn bool
-	IsFuelLow         bool
-	Event             string
+	IsMuted                      bool
+	RadioVolume                  int
+	ScreenBrightness             int
+	NavigationAddrInd            int
+	IsHuOn                       bool
+	IsCameraReverseOn            bool
+	IsFuelLow                    bool
+	Event                        string
+	HasSpeedLimit                bool
+	ShouldShowRoundaboutDistance bool
+	ShouldShowRadioMessage       bool
 }
 
 func computeBoundedValue(value int, isNegative bool) int {
@@ -50,10 +54,6 @@ func (state *hustate) LowerVolume() {
 	state.RadioVolume = computeBoundedValue(state.RadioVolume, true)
 }
 
-// func (state *hustate) IncreaseVolume() {
-// 	state.RadioVolume = computeBoundedValue(state.RadioVolume, false)
-// }
-
 func (state *hustate) LowerBrightness() {
 	state.ScreenBrightness = computeBoundedValue(state.ScreenBrightness, true)
 }
@@ -76,6 +76,31 @@ func (state *hustate) GetFuelMessage() string {
 	return ""
 }
 
+func (state *hustate) GetNavigationAddress() (ret string) {
+	if state.NavigationAddrInd == 0 {
+		if state.ShouldShowRoundaboutDistance {
+			ret = "[red]No destination set[white]"
+		}
+		return
+	}
+
+	ret = `Navigating to:
+	PKU, Yiheyuan Rd 5, Haidian District, Beijing`
+
+	if state.ShouldShowRoundaboutDistance {
+		ret = ret + "\n\t[green]Turn right in 5 km[white]"
+	}
+
+	return
+}
+
+func (state *hustate) GetRadioMessage() (ret string) {
+	if !state.ShouldShowRadioMessage {
+		return
+	}
+	return "Playing: Y.M.C.A by Village People [1:23/3:49]"
+}
+
 func (state *hustate) ToString() string {
 	if !state.IsHuOn {
 		return "\n\n\n\n[yellow]HEAD UNIT TURNED OFF[white]"
@@ -84,20 +109,26 @@ func (state *hustate) ToString() string {
 	return fmt.Sprintf(`Volume: %d
 Brightness: %d
 Reverse cam: %s
+Speed limit: %s
 
+%s
+%s
 %s
 `,
 		state.GetEffectiveVolume(),
 		state.ScreenBrightness,
 		getOnOffString(state.IsCameraReverseOn),
+		getOnOffString(state.HasSpeedLimit),
+		state.GetNavigationAddress(),
 		state.GetFuelMessage(),
+		state.GetRadioMessage(),
 	)
 }
 
 func (state *hustate) Update(code uint64, textView *tview.TextView, footer *tview.TextView) {
 	switch code {
 	case 1:
-		state.ToggleMute()
+		state.IsMuted = !state.IsMuted
 		state.Event = "toggle_radio_mute"
 	case 2:
 		state.LowerVolume()
@@ -116,16 +147,16 @@ func (state *hustate) Update(code uint64, textView *tview.TextView, footer *tvie
 		state.Event = "low_fuel_warning"
 	case 7:
 		// navigation_full_screen
-		state.Event = "navigation_full_screen"
+		state.Event = "navigation_full_screen [white]([red] not implemented[white])"
 	case 8:
-		// set_navigation_address
+		state.NavigationAddrInd = 1
 		state.Event = "set_navigation_address"
 	case 9:
 		// seek_down_search
-		state.Event = "seek_down_search"
+		state.Event = "seek_down_search [white]([red] not implemented[white])"
 	case 10:
 		// seek_up_search
-		state.Event = "seek_up_search"
+		state.Event = "seek_up_search [white]([red] not implemented[white])"
 	case 11:
 		textView.SetTextAlign(tview.AlignLeft)
 		state.IsHuOn = true
@@ -142,38 +173,37 @@ func (state *hustate) Update(code uint64, textView *tview.TextView, footer *tvie
 		state.IsCameraReverseOn = false
 	case 15:
 		// cluster_change_language
-		state.Event = "cluster_change_language"
+		state.Event = "cluster_change_language [white]([red] not implemented[white])"
 	case 16:
-		// cluster_speed_limit
+		state.HasSpeedLimit = !state.HasSpeedLimit
 		state.Event = "cluster_speed_limit"
 	case 17:
-		// cluster_roundabout_faraway
+		state.ShouldShowRoundaboutDistance = !state.ShouldShowRoundaboutDistance
 		state.Event = "cluster_roundabout_faraway"
 	case 18:
 		// cluster_random_navigation
-		state.Event = "cluster_random_navigation"
+		state.Event = "cluster_random_navigation [white]([red] not implemented[white])"
 	case 19:
-		// cluster_radio_info
+		state.ShouldShowRadioMessage = !state.ShouldShowRadioMessage
 		state.Event = "cluster_radio_info"
-	case 20:
-		// inject_custom
-		state.Event = "inject_custom"
+	default:
+		state.Event = "unknown_event"
 	}
 
 	textView.Clear()
 	fmt.Fprintf(textView, "%s", state.ToString())
-	footer.SetText(fmt.Sprintf("Recent event: %s", state.Event))
+
+	t := time.Now()
+	fmt.Fprintf(footer, "%d:%02d:%02d.%03d [yellow]%s[white]\n",
+		t.Hour(), t.Minute(), t.Second(), t.Nanosecond()/1_000_000, state.Event)
 }
 
 func main() {
 	mobileState := hustate{
-		IsMuted:           false,
-		RadioVolume:       50,
-		ScreenBrightness:  50,
-		NavigationAddrInd: 0,
-		IsHuOn:            true,
-		IsCameraReverseOn: false,
-		Event:             "none",
+		RadioVolume:      50,
+		ScreenBrightness: 50,
+		IsHuOn:           true,
+		Event:            "",
 	}
 
 	// Set up eventfd
@@ -201,19 +231,21 @@ func main() {
 	app := tview.NewApplication()
 	textView := tview.NewTextView()
 	textView.SetDynamicColors(true).
-		SetRegions(true)
-	fmt.Fprintf(textView, "%s", mobileState.ToString())
+		SetRegions(true).
+		SetText(mobileState.ToString())
 	header := tview.NewTextView().
 		SetTextAlign(tview.AlignCenter).
 		SetText("Head Unit Emulator")
 	footer := tview.NewTextView().
-		SetText(fmt.Sprintf("Recent event: %s", mobileState.Event))
+		SetDynamicColors(true).
+		SetRegions(true).
+		SetText("Event Histories\n")
 	grid := tview.NewGrid().
-		SetRows(1, 0, 1).
-		SetColumns(0).
-		AddItem(header, 0, 0, 1, 1, 0, 0, false).
+		SetRows(1, 0).
+		SetColumns(-2, -1).
+		AddItem(header, 0, 0, 1, 2, 0, 0, false).
 		AddItem(textView, 1, 0, 1, 1, 0, 0, true).
-		AddItem(footer, 2, 0, 1, 1, 0, 0, false)
+		AddItem(footer, 1, 1, 1, 1, 0, 0, false)
 	grid.SetBorders(true)
 
 	// Set up eventfd callback
