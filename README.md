@@ -7,6 +7,8 @@ Tested on:
 - Debian 11 with kernel 5.10.127
 - Ubuntu 22.04.1 with kernel 5.15.0-46-generic
 
+Note that you can't use this on WSL since WSL (even WSL2, which does have a standalone virtualized kernel) does not allow loading custom kernel modules.
+
 ## Compile & Load
 
 Simply run `make all` under this directory. Do make sure you have root access or at least can use `sudo`.
