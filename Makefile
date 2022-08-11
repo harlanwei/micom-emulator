@@ -1,4 +1,4 @@
-all: driver watchdog
+all: driver
 	cd micom && make load
 	cd ..
 
@@ -10,7 +10,7 @@ driver: header
 	cd ..
 
 watchdog:
-	gcc -o watchdog watchdog.c -O3 -Wall
+	cd watchdog && go build
 
 clean:
-	rm include/refcodes.h watchdog -f && cd micom && make clean
+	rm include/refcodes.h -f && cd micom && make clean

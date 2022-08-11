@@ -15,7 +15,7 @@ Simply run `make all` under this directory. Do make sure you have root access or
 make all
 
 # execute userspace watchdog
-./watchdog
+./watchdog-client/watchdog-client
 
 # in a new bash
 ./micomd -c inject [command]
@@ -24,7 +24,3 @@ make all
 All available commands are in the `refcodes.json` file. For example, `./micomd -c inject 0112 f0` toggles maximum radio volume.
 
 If the commands are successfully injected, watchdog should print out messages identifying each command.
-
-## To-dos
-
-- [ ] Improve watchdog interface to better emulate a car HU
