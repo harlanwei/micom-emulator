@@ -1,6 +1,7 @@
 all: driver
 	cd micom && make load
 	cd ..
+	cp watchdog-client/watchdog .
 
 header:
 	python3 ./header.py
@@ -13,4 +14,4 @@ watchdog:
 	cd watchdog && go build
 
 clean:
-	rm include/refcodes.h -f && cd micom && make clean
+	rm include/refcodes.h watchdog -f && cd micom && make clean
