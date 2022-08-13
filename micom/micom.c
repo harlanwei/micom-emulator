@@ -65,6 +65,9 @@ static long micom_ioctl(struct file *filp, unsigned int cmd, unsigned long param
         int ueventfd = (int) param;
         micom_info("ueventfd from uspace: %d", ueventfd);
 
+        if (ctxp) {
+            eventfd_ctx_put(ctxp);
+        }
         ctxp = eventfd_ctx_fdget(ueventfd);
         if (IS_ERR(ctxp)) {
             micom_err("failed to get eventfd context");
