@@ -241,7 +241,7 @@ func main() {
 	}
 
 	unix.IoctlSetInt(micomfd, 267520, efd)
-	unix.Close(micomfd)
+	defer unix.Close(micomfd)
 
 	// Create app
 	app := tview.NewApplication()

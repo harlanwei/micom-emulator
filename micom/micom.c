@@ -23,8 +23,7 @@ MODULE_AUTHOR("Vian Chen <imvianchen@stu.pku.edu.cn>");
 static int major;
 static dev_t devno;
 static struct class *device_class;
-static struct eventfd_ctx *ctxp;
-
+static struct eventfd_ctx *ctxp = NULL;
 
 static int micom_open(struct inode *inode, struct file *filp)
 {
@@ -35,6 +34,8 @@ static void comm_exec(int code)
 {
     if (!ctxp)
         return;
+
+    micom_info("sending: %s", comm_desc[code-1]);
 
     // As this is a very simplified mock environment, it's very
     // unlikely that the counter would overflow.
@@ -48,7 +49,6 @@ static void comm_exec(int code)
 static long micom_ioctl(struct file *filp, unsigned int cmd, unsigned long param)
 {
     int type, number;
-    micom_info("ioctl: cmd = %d, param = %lu", cmd, param);
 
     type = _IOC_TYPE(cmd);
     if (type != 0x15) {
@@ -57,6 +57,7 @@ static long micom_ioctl(struct file *filp, unsigned int cmd, unsigned long param
     }
     
     number = _IOC_NR(cmd);
+    micom_info("ioctl: number = %d, param = %lu", number, param);
     if (number < 0 || number > MAX_CODE) {
         micom_err("invalid code: %d", number);
     }
@@ -65,16 +66,14 @@ static long micom_ioctl(struct file *filp, unsigned int cmd, unsigned long param
         int ueventfd = (int) param;
         micom_info("ueventfd from uspace: %d", ueventfd);
 
-        if (ctxp) {
-            eventfd_ctx_put(ctxp);
-        }
+        // By design, only the most recently opened eventfd
+        // client will get messages
         ctxp = eventfd_ctx_fdget(ueventfd);
         if (IS_ERR(ctxp)) {
             micom_err("failed to get eventfd context");
             return -EINVAL;
         }
     } else {
-        micom_info("sending: %s", comm_desc[number]);
         comm_exec(number);
     }
 
@@ -83,6 +82,15 @@ static long micom_ioctl(struct file *filp, unsigned int cmd, unsigned long param
 
 static int micom_release(struct inode *inode, struct file *filp)
 {
+    // At this moment we rely on `release` to know when a process
+    // has been terminated or killed. Therefore an eventfd client
+    // should never call `close` manually before it finishes
+    // listening on events.
+    if (ctxp) {
+        eventfd_ctx_put(ctxp);
+        ctxp = NULL;
+    }
+
     return 0;
 }
 

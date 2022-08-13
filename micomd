@@ -3,9 +3,13 @@
 ## Vian Chen <imvianchen@stu.pku.edu.cn>
 
 ## This script emulates a micom binary.
-## 
-## To issue ioctl commands, this script assumes there is
-## a `ioctl.py` script under the same folder.
+
+path=$(dirname -- "$0")
+interface=$(cat $path/interface 2>/dev/null)
+
+if [[ ! "$interface" ]]; then
+    interface='ioctl'
+fi
 
 function fatal {
     echo "micomd: $1"
@@ -16,13 +20,24 @@ function fatal {
 }
 
 function verbose {
-    if [[ ! -z $MICOMD_DEBUG ]]; then
+    if [[ ! -z $DEBUG ]]; then
         echo "micomd (debug): $@"
     fi
 }
 
-function ioctl {
-    python3 $(dirname -- "$0")/ioctl.py "$1"
+function call_impl {
+    case $interface in
+        
+        ioctl|mmio|procfs|netlink)
+            verbose "Using interface: $interface"
+            python3 $path/interfaces/pub.py "$interface" "$1"
+            ;;
+
+        *)
+            fatal "Unknown interface: $interface"
+            ;;
+
+    esac
 }
 
 function exec_comm {
@@ -30,8 +45,7 @@ function exec_comm {
 
         inject|inject-outgoing)
             comms=${@:3}
-            verbose $comms
-            ioctl "$comms"
+            call_impl "$comms"
             ;;
 
         *)
@@ -40,6 +54,8 @@ function exec_comm {
     
     esac
 }
+
+# =============== Start of the main script ===============
 
 case $1 in
 
