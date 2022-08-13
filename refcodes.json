@@ -58,23 +58,23 @@
         ],
         [
             "4d3 ..",
-            "cluster_change_language"
+            "toggle_change_language"
         ],
         [
             "4db 00 .a",
-            "cluster_speed_limit"
+            "toggle_speed_limit"
         ],
         [
             "4d1 66 00 00 00 14 86 [0-9a-e]0 00",
-            "cluster_roundabout_faraway"
+            "toggle_roundabout_faraway"
         ],
         [
             "4d1 [0-9a-e]{2}",
-            "cluster_random_navigation"
+            "toggle_random_navigation"
         ],
         [
             "4d6 .*",
-            "cluster_radio_info"
+            "toggle_radio_info"
         ],
         [
             "PLACEHOLDER",

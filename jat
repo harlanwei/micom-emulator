@@ -1,6 +1,0 @@
-#!/bin/bash
-
-# Vian Chen <imvianchen@stu.pku.edu.cn>
-# 'jat' stands for 'just a test'
-
-$(dirname -- $0)/micomd -c inject "$@"
