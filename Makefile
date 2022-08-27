@@ -15,6 +15,6 @@ watchdog: watchdog-client/client.go
 	cd ..
 
 clean:
-	rm -f include/refcodes.h watchdog interface
+	rm -f micom/refcodes.h watchdog interface
 	rm -rf interfaces/__pycache__
 	cd micom && make clean

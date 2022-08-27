@@ -37,7 +37,8 @@ def mmio(code: int):
     raise RuntimeError('not implemented')
 
 def procfs(code: int):
-    raise RuntimeError('not implemented')
+    with open("/proc/micom", "wb") as file:
+        file.write(code)
 
 def netlink(code: int):
     raise RuntimeError('not implemented')

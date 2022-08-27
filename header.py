@@ -25,7 +25,7 @@ for code in refcodes:
 
 content += "};\n"
 
-header_path = f"{dir}/include/refcodes.h"
+header_path = f"{dir}/micom/refcodes.h"
 os.makedirs(os.path.dirname(header_path), exist_ok=True)
 with open(header_path, "w+", encoding="utf-8") as header:
     header.write(content)
