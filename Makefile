@@ -14,6 +14,9 @@ watchdog: watchdog-client/client.go
 	cd watchdog-client && go build
 	cd ..
 
+vscode-conf:
+	python3 ./codeconf.py
+
 clean:
 	rm -f micom/refcodes.h watchdog interface
 	rm -rf interfaces/__pycache__
