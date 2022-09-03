@@ -7,7 +7,7 @@ Tested on:
 - Debian 11 with kernel 5.10.127
 - Ubuntu 22.04.1 with kernel 5.15.0-46-generic
 
-Note that you can't use this on WSL since WSL (even WSL2, which does have a standalone virtualized kernel) does not allow loading custom kernel modules.
+Note that you can't use this on WSL by default, since WSL (even WSL2, which does have a standalone virtualized kernel) does not allow loading custom kernel modules. To use with WSL, you would need to compile your own kernel.
 
 ## Compile & Load
 
@@ -50,3 +50,7 @@ msf post(koffee) > set session 1 # or your session id
 msf post(koffee) > set micomd <path to micomd>
 msf post(koffee) > exploit # or other actions
 ```
+
+## References
+
+[1] Costantino, G., & Matteucci, I. (2020). KOFFEE-Kia OFFensivE Exploit. Istituto di Informatica e Telematica, Tech. Rep.
