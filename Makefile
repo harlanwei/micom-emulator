@@ -14,7 +14,10 @@ watchdog: watchdog-client/client.go
 	cd watchdog-client && go build
 	cd ..
 
+vscode-conf:
+	python3 ./codeconf.py
+
 clean:
-	rm -f include/refcodes.h watchdog interface
+	rm -f include/refcodes.h watchdog interface .vscode/c_cpp_properties.json
 	rm -rf interfaces/__pycache__
 	cd micom && make clean
