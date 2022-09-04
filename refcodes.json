@@ -21,7 +21,7 @@
             "high_screen_brightness"
         ],
         [
-            "8353 0b 0[1-9a-e]",
+            "8353 0b 0([1-9a-e])",
             "low_fuel_warning"
         ],
         [
@@ -33,7 +33,7 @@
             "set_navigation_address"
         ],
         [
-            "133 0[1-9a-e]",
+            "133 0([1-9a-e])",
             "seek_down_search"
         ],
         [
@@ -65,20 +65,20 @@
             "toggle_speed_limit"
         ],
         [
-            "4d1 66 00 00 00 14 86 [0-9a-e]0 00",
+            "4d1 66 00 00 00 14 86 ([0-9a-e]0) 00",
             "toggle_roundabout_faraway"
         ],
         [
-            "4d1 [0-9a-e]{2}",
+            "4d1 ([0-9a-e]{2})",
             "toggle_random_navigation"
         ],
         [
-            "4d6 .*",
+            "4d6 (.*)",
             "toggle_radio_info"
         ],
         [
             "PLACEHOLDER",
-            "inject_custom"
+            "inject_scene"
         ]
     ]
 }

@@ -1,9 +1,7 @@
-CONFIG_MODULE_SIG=n
-
 LKM = micom
 
 obj-m += ${LKM}.o
-$(LKM)-objs += uevent.o
+$(LKM)-objs += main.o uevent.o proc.o mmio.o
 
 all:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules

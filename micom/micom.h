@@ -1,12 +1,11 @@
 // Vian Chen <imvianchen@stu.pku.edu.cn>
 
-#pragma once
+#ifndef MODULE_MICOM_H
+#define MODULE_MICOM_H
 
 #include <linux/module.h>
+#include <linux/init.h>
 #include "refcodes.h"
-
-MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Vian Chen <imvianchen@stu.pku.edu.cn>");
 
 #define DEVICE_NAME "micom"
 
@@ -25,3 +24,15 @@ extern struct eventfd_ctx *ctxp;
 void uevent_send(int code);
 void uevent_unregister(void);
 int uevent_register(int ueventfd);
+
+/// proc.c
+int proc_register(void);
+void proc_unregister(void);
+
+/// mmio.c
+extern struct mmio mmio;
+int mmio_mmap(struct file *file, struct vm_area_struct *vma);
+int mmio_register(void);
+void mmio_unregister(void);
+
+#endif // MODULE_MICOM_H

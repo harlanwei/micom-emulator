@@ -150,61 +150,63 @@ func (state *hustate) Update(
 	historyView *tview.TextView,
 ) {
 	switch code {
-	case 1:
+	case TOGGLE_RADIO_MUTE:
 		state.IsMuted = !state.IsMuted
 		state.Event = "toggle_radio_mute"
-	case 2:
+	case REDUCE_RADIO_VOLUME:
 		state.LowerVolume()
 		state.Event = "reduce_radio_volume"
-	case 3:
+	case MAX_RADIO_VOLUME:
 		state.RadioVolume = 100
 		state.Event = "max_radio_volume"
-	case 4:
+	case LOW_SCREEN_BRIGHTNESS:
 		state.LowerBrightness()
 		state.Event = "low_screen_brightness"
-	case 5:
+	case HIGH_SCREEN_BRIGHTNESS:
 		state.IncreaseBrightness()
 		state.Event = "high_screen_brightness"
-	case 6:
+	case LOW_FUEL_WARNING:
 		state.IsFuelLow = true
 		state.Event = "low_fuel_warning"
-	case 7:
+	case NAVIGATION_FULL_SCREEN:
 		state.Event = "navigation_full_screen" + NOT_IMPL_STRING
-	case 8:
+	case SET_NAVIGATION_ADDRESS:
 		state.NavigationAddrInd = 1
 		state.Event = "set_navigation_address"
-	case 9:
+	case SEEK_DOWN_SEARCH:
 		state.Event = "seek_down_search" + NOT_IMPL_STRING
-	case 10:
+	case SEEK_UP_SEARCH:
 		state.Event = "seek_up_search" + NOT_IMPL_STRING
-	case 11:
+	case SWITCH_ON_HU:
 		stateView.SetTextAlign(tview.AlignLeft)
 		state.IsHuOn = true
 		state.Event = "switch_on_hu"
-	case 12:
+	case SWITCH_OFF_HU:
 		stateView.SetTextAlign(tview.AlignCenter)
 		state.IsHuOn = false
 		state.Event = "switch_off_hu"
-	case 13:
+	case CAMERA_REVERSE_ON:
 		state.IsCameraReverseOn = true
 		state.Event = "camera_reverse_on"
-	case 14:
+	case CAMERA_REVERSE_OFF:
 		state.Event = "camera_reverse_off"
 		state.IsCameraReverseOn = false
-	case 15:
+	case TOGGLE_CHANGE_LANGUAGE:
 		state.Event = "toggle_change_language" + NOT_IMPL_STRING
-	case 16:
+	case TOGGLE_SPEED_LIMIT:
 		state.HasSpeedLimit = !state.HasSpeedLimit
 		state.Event = "toggle_speed_limit"
-	case 17:
+	case TOGGLE_ROUNDABOUT_FARAWAY:
 		state.ShouldShowRoundaboutDistance = !state.ShouldShowRoundaboutDistance
 		state.Event = "toggle_roundabout_faraway"
-	case 18:
+	case TOGGLE_RANDOM_NAVIGATION:
 		state.Event = "toggle_random_navigation" + NOT_IMPL_STRING
-	case 19:
+	case TOGGLE_RADIO_INFO:
 		// FIXME
 		state.ShouldShowRadioMessage = true
 		state.Event = "toggle_radio_info"
+	case INJECT_SCENE:
+		state.Event = "inject_scene"
 	default:
 		state.Event = "unknown_event"
 	}

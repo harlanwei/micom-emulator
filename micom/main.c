@@ -22,6 +22,7 @@ static long micom_ioctl(struct file *filp, unsigned int cmd, unsigned long param
 {
     int type, number;
     int ret = 0;
+    int ret = 0;
 
     type = _IOC_TYPE(cmd);
     if (type != 0x15) {
@@ -62,11 +63,14 @@ static struct file_operations fops = {
     .open = micom_open,
     .unlocked_ioctl = micom_ioctl,
     .release = micom_release,
+    .mmap = mmio_mmap,
 };
 
 static int __init init_micom(void)
 {
     struct device *p_device;
+
+    micom_info("initializing micom driver");
 
     major = register_chrdev(0, DEVICE_NAME, &fops);
     if (major < 0) {
@@ -78,23 +82,36 @@ static int __init init_micom(void)
     device_class = class_create(THIS_MODULE, DEVICE_NAME);
     if (IS_ERR(device_class)) {
         micom_err("can't create class");
-        goto err_class_create;
+        goto destroy_chrdev;
     }
     device_class->devnode = micom_devnode;
 
     p_device = device_create(device_class, NULL, devno, NULL, DEVICE_NAME);
     if (IS_ERR((p_device))) {
         micom_err("can't create device file");
-        goto err_device_create;
+        goto destroy_class;
+    }
+
+    if (proc_register()) {
+        micom_err("failed creating procfs entries");
+        goto destroy_device;
+    }
+
+    if (mmio_register()) {
+        micom_err("failed registering mmio");
+        goto destroy_proc;
     }
 
     micom_info("successfully loaded");
     return 0;
 
-err_device_create:
+destroy_proc:
+    proc_unregister();
+destroy_device:
+    device_destroy(device_class, devno);
+destroy_class:
     class_destroy(device_class);
-
-err_class_create:
+destroy_chrdev:
     unregister_chrdev_region(devno, 1);
     return -1;
 }
@@ -102,6 +119,9 @@ err_class_create:
 static void __exit exit_micom(void)
 {
     uevent_unregister();
+    proc_unregister();
+    mmio_unregister();
+
     device_destroy(device_class, devno);
     class_destroy(device_class);
     unregister_chrdev(major, DEVICE_NAME);
@@ -109,3 +129,6 @@ static void __exit exit_micom(void)
 
 module_init(init_micom);
 module_exit(exit_micom);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Vian Chen <imvianchen@stu.pku.edu.cn>");
