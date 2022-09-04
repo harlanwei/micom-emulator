@@ -13,11 +13,6 @@
 static struct task_struct *mmiot;
 static uint32_t *buff;
 
-struct mmio {
-    unsigned long phys;
-    unsigned long size;
-};
-
 int mmio_mmap(struct file *file, struct vm_area_struct *vma)
 {
     unsigned long size = vma->vm_end - vma->vm_start;
