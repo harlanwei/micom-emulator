@@ -1,45 +1,17 @@
 // Vian Chen <imvianchen@stu.pku.edu.cn>
 
-#include <linux/module.h>
 #include <linux/fs.h>
 #include <linux/device.h>
 #include <linux/eventfd.h>
-#include "../include/refcodes.h"
-
-MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Vian Chen <imvianchen@stu.pku.edu.cn>");
-
-#define DEVICE_NAME "micom"
-
-#define MODULE_PREFIX DEVICE_NAME
-#define MICOM_KERNEL_MESSAGE(kind, format, ...) \
-    pr_##kind( \
-        MODULE_PREFIX ": " format " (in %s at line %d)\n", \
-        ##__VA_ARGS__, __func__, __LINE__)
-#define micom_info(format, ...) MICOM_KERNEL_MESSAGE(info, format, ##__VA_ARGS__)
-#define micom_err(format, ...) MICOM_KERNEL_MESSAGE(err, format, ##__VA_ARGS__)
-#define micom_warn(format, ...) MICOM_KERNEL_MESSAGE(warn, format, ##__VA_ARGS__)
+#include "micom.h"
 
 static int major;
 static dev_t devno;
 static struct class *device_class;
-static struct eventfd_ctx *ctxp = NULL;
 
 static int micom_open(struct inode *inode, struct file *filp)
 {
     return 0;
-}
-
-static void comm_exec(int code)
-{
-    if (!ctxp)
-        return;
-
-    micom_info("sending: %s", comm_desc[code-1]);
-
-    // As this is a very simplified mock environment, it's very
-    // unlikely that the counter would overflow.
-    eventfd_signal(ctxp, code);
 }
 
 /**
@@ -49,6 +21,8 @@ static void comm_exec(int code)
 static long micom_ioctl(struct file *filp, unsigned int cmd, unsigned long param)
 {
     int type, number;
+    int ret = 0;
+    int ret = 0;
 
     type = _IOC_TYPE(cmd);
     if (type != 0x15) {
@@ -63,34 +37,16 @@ static long micom_ioctl(struct file *filp, unsigned int cmd, unsigned long param
     }
 
     if (number == 0) {
-        int ueventfd = (int) param;
-        micom_info("ueventfd from uspace: %d", ueventfd);
-
-        // By design, only the most recently opened eventfd
-        // client will get messages
-        ctxp = eventfd_ctx_fdget(ueventfd);
-        if (IS_ERR(ctxp)) {
-            micom_err("failed to get eventfd context");
-            return -EINVAL;
-        }
+        ret = uevent_register((int) param);
     } else {
-        comm_exec(number);
+        uevent_send(number);
     }
 
-    return 0;
+    return ret;
 }
 
 static int micom_release(struct inode *inode, struct file *filp)
 {
-    // At this moment we rely on `release` to know when a process
-    // has been terminated or killed. Therefore an eventfd client
-    // should never call `close` manually before it finishes
-    // listening on events.
-    if (ctxp) {
-        eventfd_ctx_put(ctxp);
-        ctxp = NULL;
-    }
-
     return 0;
 }
 
@@ -107,11 +63,14 @@ static struct file_operations fops = {
     .open = micom_open,
     .unlocked_ioctl = micom_ioctl,
     .release = micom_release,
+    .mmap = mmio_mmap,
 };
 
 static int __init init_micom(void)
 {
     struct device *p_device;
+
+    micom_info("initializing micom driver");
 
     major = register_chrdev(0, DEVICE_NAME, &fops);
     if (major < 0) {
@@ -123,37 +82,53 @@ static int __init init_micom(void)
     device_class = class_create(THIS_MODULE, DEVICE_NAME);
     if (IS_ERR(device_class)) {
         micom_err("can't create class");
-        goto err_class_create;
+        goto destroy_chrdev;
     }
     device_class->devnode = micom_devnode;
 
     p_device = device_create(device_class, NULL, devno, NULL, DEVICE_NAME);
     if (IS_ERR((p_device))) {
         micom_err("can't create device file");
-        goto err_device_create;
+        goto destroy_class;
+    }
+
+    if (proc_register()) {
+        micom_err("failed creating procfs entries");
+        goto destroy_device;
+    }
+
+    if (mmio_register()) {
+        micom_err("failed registering mmio");
+        goto destroy_proc;
     }
 
     micom_info("successfully loaded");
     return 0;
 
-err_device_create:
+destroy_proc:
+    proc_unregister();
+destroy_device:
+    device_destroy(device_class, devno);
+destroy_class:
     class_destroy(device_class);
-
-err_class_create:
+destroy_chrdev:
     unregister_chrdev_region(devno, 1);
     return -1;
 }
 
 static void __exit exit_micom(void)
 {
+    uevent_unregister();
+    proc_unregister();
+    mmio_unregister();
+
     device_destroy(device_class, devno);
     class_destroy(device_class);
     unregister_chrdev(major, DEVICE_NAME);
-
-    if (ctxp) {
-        eventfd_ctx_put(ctxp);
-    }
 }
 
 module_init(init_micom);
 module_exit(exit_micom);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Vian Chen <imvianchen@stu.pku.edu.cn>");

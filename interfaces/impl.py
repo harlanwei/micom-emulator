@@ -1,6 +1,9 @@
 # Vian Chen <imvianchen@stu.pku.edu.cn>
 
 import fcntl
+import mmap
+import sys
+import os
 
 # ======================= IOCTL Linux helpers =======================
 
@@ -30,14 +33,22 @@ def MICOM_IOW(nr: int) -> int:
 # ===================================================================
 
 def ioctl(code: int):
-    with open("/dev/micom", "wb") as fd:
-        fcntl.ioctl(fd, MICOM_IOW(code))
+    with open("/dev/micom", "wb") as f:
+        fcntl.ioctl(f, MICOM_IOW(code))
 
 def mmio(code: int):
-    raise RuntimeError('not implemented')
+    fd = os.open("/dev/micom", os.O_RDWR | os.O_SYNC)
+    mm = mmap.mmap(fd, 0x1000)
+    mm[0] = code
+    mm.close()
+    os.close(fd)
 
 def procfs(code: int):
-    raise RuntimeError('not implemented')
+    with open("/proc/micom", "wb") as file:
+        file.write(code)
 
-def netlink(code: int):
-    raise RuntimeError('not implemented')
+def netlink(code: int = 0):
+    print(
+        "Error: Netlink is already deprecated in Linux.",
+        file=sys.stderr
+    )
