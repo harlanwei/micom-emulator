@@ -17,3 +17,5 @@ jobs:
       uses: actions/setup-go@v3.3.0
     - name: Build headers and the driver
       run: make header && make driver
+    - name: Build watchdog client
+      run: make watchdog-client

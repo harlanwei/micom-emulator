@@ -22,7 +22,6 @@ static long micom_ioctl(struct file *filp, unsigned int cmd, unsigned long param
 {
     int type, number;
     int ret = 0;
-    int ret = 0;
 
     type = _IOC_TYPE(cmd);
     if (type != 0x15) {
