@@ -1,3 +1,7 @@
+# =====================================
+# Deprecated. Use clangd-conf instead.
+# =====================================
+
 # Vian Chen <imvianchen@stu.pku.edu.cn>
 # Generates an extension config for C/C++ on VSCode
 

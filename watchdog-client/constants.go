@@ -25,3 +25,26 @@ const (
 	TOGGLE_RADIO_INFO         = 19
 	INJECT_SCENE              = 20
 )
+
+var CodeEventMap = map[uint64]string{
+	1:  "toggle_radio_mute",
+	2:  "reduce_radio_volume",
+	3:  "max_radio_volume",
+	4:  "low_screen_brightness",
+	5:  "high_screen_brightness",
+	6:  "low_fuel_warning",
+	7:  "navigation_full_screen",
+	8:  "set_navigation_address",
+	9:  "seek_down_search",
+	10: "seek_up_search",
+	11: "switch_on_hu",
+	12: "switch_off_hu",
+	13: "camera_reverse_on",
+	14: "camera_reverse_off",
+	15: "toggle_change_language",
+	16: "toggle_speed_limit",
+	17: "toggle_roundabout_faraway",
+	18: "toggle_random_navigation",
+	19: "toggle_radio_info",
+	20: "inject_scene",
+}

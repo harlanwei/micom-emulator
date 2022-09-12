@@ -35,7 +35,15 @@ for ind, code in enumerate(refcodes):
     gohdr_content += f"\t{code[1].upper()} = {ind+1}\n"
 
 chdr_content += "};\n"
-gohdr_content += ")"
+gohdr_content += """)
+
+var CodeEventMap = map[uint64]string{
+"""
+
+for ind, code in enumerate(refcodes):
+    gohdr_content += f"\t{ind+1}: \"{code[1].lower()}\",\n"
+
+gohdr_content += "}"
 
 chdr_path = f"{dir}/micom/refcodes.h"
 os.makedirs(os.path.dirname(chdr_path), exist_ok=True)
