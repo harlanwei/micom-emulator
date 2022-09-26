@@ -1,6 +1,6 @@
 # micom-emulator
 
-This project creates an emulation environment for [this](https://github.com/rapid7/metasploit-framework/blob/master/modules/post/android/local/koffee.rb) Metasploit module. It composes of an emulated `micom` driver, an emulated `micomd` daemon and a userspace program `watchdog` that shows if an action is successfully triggered.
+This project creates an emulation environment for [this](https://github.com/rapid7/metasploit-framework/blob/master/modules/post/android/local/koffee.rb) Metasploit module. It's composed of an emulated `micom` driver, an emulated `micomd` daemon and a userspace program `watchdog` that shows if an action is successfully triggered.
 
 Tested on:
 
