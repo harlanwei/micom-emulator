@@ -42,11 +42,11 @@
         ],
         [
             "170 0[1-9a-e]",
-            "switch_on_hu"
+            "prepare_ota_update"
         ],
         [
             "170 00",
-            "switch_off_hu"
+            "exit_ota_update"
         ],
         [
             "8353 03 0[1-9a-e]",

@@ -118,7 +118,7 @@ func (state *HuState) GetRadioMessage() string {
 
 func (state *HuState) ToString() string {
 	if !state.IsHuOn {
-		return "\n\n\n\n[black:white:bl]HEAD UNIT TURNED OFF[-:-:-]"
+		return "\n\n\n\n[black:white:bl]UPDATING YOUR CAR. DO NOT RESTART.[-:-:-]"
 	}
 
 	return fmt.Sprintf(`Volume: %d
@@ -163,10 +163,10 @@ func (state *HuState) Update(code uint64) {
 		eventAppendix = NOT_IMPL_STRING
 	case SEEK_UP_SEARCH:
 		eventAppendix = NOT_IMPL_STRING
-	case SWITCH_ON_HU:
+	case PREPARE_OTA_UPDATE:
 		state.TextAlignment = tview.AlignLeft
 		state.IsHuOn = true
-	case SWITCH_OFF_HU:
+	case EXIT_OTA_UPDATE:
 		state.TextAlignment = tview.AlignCenter
 		state.IsHuOn = false
 	case CAMERA_REVERSE_ON:
