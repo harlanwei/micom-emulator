@@ -3,7 +3,7 @@
 
 #pragma once
 
-#define N_COMMANDS 20
+#define N_COMMANDS 21
 
 __attribute__((__used__))
 static const char *comm_desc[21] = {

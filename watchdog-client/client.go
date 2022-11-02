@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/gdamore/tcell/v2"
@@ -43,28 +42,6 @@ func (hu *Hu) GetTextColor() tcell.Color {
 }
 
 func (hu *Hu) ProcessCommand(code uint64) *Hu {
-	if code == INJECT_SCENE {
-		fd, err := os.OpenFile("scene.tmp", os.O_RDONLY, 0)
-		if err != nil {
-			log.Panicln("No scene.tmp file.")
-		}
-
-		buf := make([]byte, 1024)
-		_, err = fd.Read(buf)
-		if err != nil {
-			log.Panicln("Cannot read from scene.tmp")
-		}
-
-		fd.Close()
-		content := string(buf[:])
-		keyValue := strings.Split(content, " ")
-		if len(keyValue) != 2 {
-			log.Panicln("Incorrect format of scene.tmp")
-		}
-
-		key, value := keyValue[0], keyValue[1]
-		hu.mgr.InjectScene(key, value)
-	}
 	hu.state.Update(code)
 	return hu
 }

@@ -4,7 +4,7 @@ import json
 import re
 import os
 import sys
-from typing import Any, Callable
+from typing import Any, Callable, List
 from functools import partial
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -15,16 +15,29 @@ REF_COMMAND = 0
 
 log_err = partial(print, file=sys.stderr)
 
-def call(cb: Callable[[int], Any], command: str) -> None:
-    dir = os.path.dirname(os.path.realpath(__file__))
-    refcodes = []
-    with open(f"{dir}/../refcodes.json", "r") as f:
-        obj = json.load(f)
-        refcodes = obj["refcodes"]
+# Reference: https://stackoverflow.com/questions/1628949/to-find-first-n-prime-numbers-in-python
+def get_first_n_primes(n: int) -> List[int]:
+    def isPrime(n: int) -> bool:
+        return re.match(r'^1?$|^(11+?)\1+$', '1' * n) == None
+    primes = []
+    step = 100
+    upper_bound = step + 2
+    while len(primes) < n:
+        primes = [i for i in range(upper_bound - step, upper_bound) if isPrime(i)]
+        upper_bound += step
+    return primes[:n]
 
+refcodes = []
+dir = os.path.dirname(os.path.realpath(__file__))
+with open(f"{dir}/../refcodes.json", "r") as f:
+    obj = json.load(f)
+    refcodes = obj["refcodes"]
+command_repr = get_first_n_primes(len(refcodes))
+
+def call(cb: Callable[[int], Any], command: str) -> None:
     for ind, ref in enumerate(refcodes):
         if re.compile(ref[REF_COMMAND]).match(command):
-            cb(ind+1)
+            cb(command_repr[ind])
             exit(0)
     
     log_err(f"Unknown command: {command}")

@@ -1,8 +1,7 @@
-all: driver clangd-conf
+all: driver
 	cd micom && make load
 	cd ..
 	rm -f watchdog && ln -s $(shell pwd)/watchdog-client/watchdog watchdog
-	echo "key value" > scene.tmp
 
 header:
 	python3 ./header.py
@@ -22,5 +21,5 @@ clean:
 	rm -rf micom/.cache micom/compile_commands.json
 	rm -rf interfaces/__pycache__
 	rm -f watchdog 
-	rm -f scene.tmp interface
+	rm -f interface
 	cd micom && make clean

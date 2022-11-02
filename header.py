@@ -30,7 +30,7 @@ chdr_content = f"""// This file is generated automatically.
 
 #pragma once
 
-#define N_COMMANDS {len(refcodes)}
+#define N_COMMANDS {len(refcodes) + 1}
 
 __attribute__((__used__))
 static const char *comm_desc[{len(refcodes) + 1}] = {{
