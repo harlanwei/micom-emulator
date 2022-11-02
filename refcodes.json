@@ -42,7 +42,7 @@
         ],
         [
             "170 0[1-9a-e]",
-            "prepare_ota_update"
+            "do_ota_update"
         ],
         [
             "170 00",

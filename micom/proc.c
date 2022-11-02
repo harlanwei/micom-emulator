@@ -21,7 +21,7 @@ static ssize_t signal_write(struct file *filp, const char __user *buf, size_t co
         return -EINVAL;
     }
 
-    if (code < 0 || code > MAX_CODE) {
+    if (code < 0) {
         micom_err("invalid code: %d", code);
         return -EINVAL;
     }

@@ -7,7 +7,7 @@
 
 __attribute__((__used__))
 static const char *comm_desc[21] = {
-    "", // for eventfd
+    "update_eventfd",
 	"toggle_radio_mute",
 	"reduce_radio_volume",
 	"max_radio_volume",
@@ -18,7 +18,7 @@ static const char *comm_desc[21] = {
 	"set_navigation_address",
 	"seek_down_search",
 	"seek_up_search",
-	"prepare_ota_update",
+	"do_ota_update",
 	"exit_ota_update",
 	"camera_reverse_on",
 	"camera_reverse_off",
@@ -28,4 +28,29 @@ static const char *comm_desc[21] = {
 	"toggle_random_navigation",
 	"toggle_radio_info",
 	"inject_scene",
+};
+
+__attribute__((__used__))
+static const int desc_ind[21] = {
+    0, // for eventfd
+	2,
+	3,
+	5,
+	7,
+	11,
+	13,
+	17,
+	19,
+	23,
+	29,
+	31,
+	37,
+	41,
+	43,
+	47,
+	53,
+	59,
+	61,
+	67,
+	71,
 };

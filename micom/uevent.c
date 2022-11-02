@@ -8,10 +8,23 @@ struct eventfd_ctx *ctxp = NULL;
 
 void uevent_send(int code)
 {
+    int command_ind = -1;
+
     if (!ctxp)
         return;
 
-    micom_info("sending: %s", comm_desc[code-1]);
+    for (int i = 0; i < MAX_CODE; i++) {
+        if (code == desc_ind[i]) {
+            command_ind = i;
+            micom_info("sending: %s", comm_desc[i]);
+            break;
+        }
+    }
+
+    if (command_ind < 0) {
+        micom_err("invalid code: %d", code);
+        return;
+    }
 
     // As this is a very simplified mock environment, it's very
     // unlikely that the counter would overflow.

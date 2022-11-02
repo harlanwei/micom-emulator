@@ -31,9 +31,6 @@ static long micom_ioctl(struct file *filp, unsigned int cmd, unsigned long param
     
     number = _IOC_NR(cmd);
     micom_info("ioctl: number = %d, param = %lu", number, param);
-    if (number < 0 || number > MAX_CODE) {
-        micom_err("invalid code: %d", number);
-    }
 
     if (number == 0) {
         ret = uevent_register((int) param);
