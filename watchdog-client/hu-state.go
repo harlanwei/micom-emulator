@@ -191,6 +191,6 @@ func (state *HuState) Update(code uint64) {
 	if event, ok := CodeEventMap[code]; ok {
 		state.Event = event + eventAppendix
 	} else {
-		state.Event = "(unknown event)"
+		// no-op
 	}
 }
