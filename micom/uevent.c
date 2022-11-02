@@ -8,20 +8,19 @@ struct eventfd_ctx *ctxp = NULL;
 
 void uevent_send(int code)
 {
-    int command_ind = -1;
+    int ind;
 
     if (!ctxp)
         return;
 
-    for (int i = 0; i < MAX_CODE; i++) {
-        if (code == desc_ind[i]) {
-            command_ind = i;
-            micom_info("sending: %s", comm_desc[i]);
+    for (ind = 0; ind < N_COMMANDS; ind++) {
+        if (code == desc_ind[ind]) {
+            micom_info("sending: %s", comm_desc[ind]);
             break;
         }
     }
 
-    if (command_ind < 0) {
+    if (ind == N_COMMANDS) {
         micom_err("invalid code: %d", code);
         return;
     }
