@@ -14,8 +14,8 @@ const (
 	SET_NAVIGATION_ADDRESS    = 19
 	SEEK_DOWN_SEARCH          = 23
 	SEEK_UP_SEARCH            = 29
-	DO_OTA_UPDATE             = 31
-	EXIT_OTA_UPDATE           = 37
+	EXIT_OTA_UPDATE           = 31
+	DO_OTA_UPDATE             = 37
 	CAMERA_REVERSE_ON         = 41
 	CAMERA_REVERSE_OFF        = 43
 	TOGGLE_CHANGE_LANGUAGE    = 47
@@ -37,8 +37,8 @@ var CodeEventMap = map[uint64]string{
 	19: "set_navigation_address",
 	23: "seek_down_search",
 	29: "seek_up_search",
-	31: "do_ota_update",
-	37: "exit_ota_update",
+	31: "exit_ota_update",
+	37: "do_ota_update",
 	41: "camera_reverse_on",
 	43: "camera_reverse_off",
 	47: "toggle_change_language",
