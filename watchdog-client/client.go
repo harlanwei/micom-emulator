@@ -104,7 +104,7 @@ func main() {
 	grid := tview.NewGrid().
 		SetBorders(true).
 		SetRows(1, 1, 0).
-		SetColumns(-2, -1).
+		SetColumns(-1, -1).
 		AddItem(header, 0, 0, 1, 2, 0, 0, false).
 		AddItem(stateView, 1, 0, 2, 1, 0, 0, false).
 		AddItem(historyHeader, 1, 1, 1, 1, 0, 0, false).

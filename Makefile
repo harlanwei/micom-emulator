@@ -11,7 +11,7 @@ driver:
 	cd ..
 
 watchdog: watchdog-client/*.go
-	cd watchdog-client && go build
+	cd watchdog-client && rm -f watchdog && go build
 	cd ..
 
 clangd-conf:

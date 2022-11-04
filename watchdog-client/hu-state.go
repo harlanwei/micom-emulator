@@ -163,10 +163,10 @@ func (state *HuState) Update(code uint64) {
 		eventAppendix = NOT_IMPL_STRING
 	case SEEK_UP_SEARCH:
 		eventAppendix = NOT_IMPL_STRING
-	case DO_OTA_UPDATE:
+	case EXIT_OTA_UPDATE:
 		state.TextAlignment = tview.AlignLeft
 		state.IsHuOn = true
-	case EXIT_OTA_UPDATE:
+	case DO_OTA_UPDATE:
 		state.TextAlignment = tview.AlignCenter
 		state.IsHuOn = false
 	case CAMERA_REVERSE_ON:
